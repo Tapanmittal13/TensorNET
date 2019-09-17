@@ -1,32 +1,15 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Sep 12 19:44:21 2019
-
-@author: Tapan_Mittal
-"""
-
-def get_data(x,preprocess=False):
-  (X_train, y_train), (X_test, y_test) = x.load_data()
-  num_classes = len(np.unique(y_train))
-  X_train, Y_train = shuffle(X_train, y_train)
-  X_test, Y_test = shuffle(X_test, y_test)
-
-  if preprocess:
-        X_train = X_train.astype('float32')
-        X_test = X_test.astype('float32')
-        X_train /= 255
-        X_test /= 255
-  
-  #Y_train = to_categorical(y_train, num_classes)
-  #Y_test = to_categorical(y_test, num_classes)
-  return X_train, Y_train, X_test, Y_test
+import tensorflow as tf
+import numpy as np  
+import pandas as pd
 
 
 #wrapper functions to make features of data (take a value & Wrap it inside of byteslist or int of size 64)
 def _bytes_feature(value):
     return tf.train.Feature(bytes_list=tf.train.BytesList(value=[value]))
+
 def _int64_feature(value):
     return tf.train.Feature(int64_list=tf.train.Int64List(value=[value]))
+
 def _float_feature(value):
 	return tf.train.Feature(float_list=tf.train.FloatList(value=[value]))
 
@@ -60,6 +43,7 @@ def createDataRecord(out_filename,category,addrs,labels):
     sys.stdout.flush()
 
 #take one record out from .tfrecords file so we get an image and a label
+#augmentations will come inside this
 def parser(record):
     #first say what kind of feature in the file i.e. 
     keys_to_features = {
@@ -76,7 +60,7 @@ def parser(record):
 
     return image, label
 
-def input_fn(filenames,buffer_size,seed,batch_size,GPU_buffer_size):
+def input_fn(filenames,img_height, img_width, channel,num_classes,buffer_size,seed,batch_size,GPU_buffer_size):
   
   
   dataset = tf.data.TFRecordDataset(filenames=filenames, buffer_size=buffer_size)# num_parallel_reads=40) #this tf.data API,one of the most imp in Tensorflow
@@ -91,3 +75,30 @@ def input_fn(filenames,buffer_size,seed,batch_size,GPU_buffer_size):
   
   return dataset
 
+
+class CreateTFRecord:
+    """docstring for CreateTFRecord"""
+    '''
+    EXP.
+    createDataRecord('train.tfrecords',"Train data", X_train, Y_train)
+    '''
+    def __init__(self, out_filename,category,addrs,labels):
+        super().__init__()
+        self.out_filename = out_filename
+        self.category = category
+        self.addrs=addrs
+        self.labels=labels
+        createDataRecord(self.out_filename, self.category,self.addrs,self.labels)
+        
+class Get_TFRecordDataset(object):
+    def __init__(self, filenames,img_height, img_width, channel,num_classes,buffer_size,seed,batch_size,GPU_buffer_size):
+        self.filenames = filenames
+        self.img_height=img_height
+        self.img_width=img_width
+        self.channel=channel
+        self.num_classes=num_classes
+        self.buffer_size=buffer_size
+        self.seed=seed
+        self.batch_size=batch_size
+        self.GPU_buffer_size = GPU_buffer_size
+        input_fn(self.filenames,self.img_height, self.img_width, self.channel,self.num_classes,self.buffer_size,self.seed,self.batch_size,self.GPU_buffer_size)
