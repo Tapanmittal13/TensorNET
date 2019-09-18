@@ -44,7 +44,7 @@ def createDataRecord(out_filename,category,addrs,labels):
 
 #take one record out from .tfrecords file so we get an image and a label
 #augmentations will come inside this
-def parser(record):
+def parser(record,img_height, img_width, channel,num_classes):
     #first say what kind of feature in the file i.e. 
     keys_to_features = {
         "image_raw": tf.compat.v2.io.FixedLenFeature([], tf.string),  #changes done for 2.0
@@ -60,7 +60,7 @@ def parser(record):
 
     return image, label
 
-def input_fn(filenames,img_height, img_width, channel,num_classes,buffer_size,seed,batch_size,GPU_buffer_size):
+def input_fn(filenames,buffer_size,seed,batch_size,GPU_buffer_size):
   
   
   dataset = tf.data.TFRecordDataset(filenames=filenames, buffer_size=buffer_size)# num_parallel_reads=40) #this tf.data API,one of the most imp in Tensorflow
@@ -101,4 +101,5 @@ class Get_TFRecordDataset(object):
         self.seed=seed
         self.batch_size=batch_size
         self.GPU_buffer_size = GPU_buffer_size
-        input_fn(self.filenames,self.img_height, self.img_width, self.channel,self.num_classes,self.buffer_size,self.seed,self.batch_size,self.GPU_buffer_size)
+        parser(record,self.img_height, self.img_width, self.channel,self.num_classes)
+        input_fn(self.filenames,self.buffer_size,self.seed,self.batch_size,self.GPU_buffer_size)
