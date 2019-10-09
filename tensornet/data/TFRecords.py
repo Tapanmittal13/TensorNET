@@ -14,7 +14,7 @@ def _float_feature(value):
 	return tf.train.Feature(float_list=tf.train.FloatList(value=[value]))
 
 def createDataRecord(out_filename,category,addrs,labels):
-    #sample: createDataRecord('train.tfrecords',"Train data", X_train, Y_train)
+    """"createDataRecord('train.tfrecords',"Train data", X_train, Y_train)"""
     # open the TFRecords file
     writer = tf.compat.v1.python_io.TFRecordWriter(out_filename)   #changes done for 2.0
     for i in range(len(addrs)):
@@ -91,8 +91,8 @@ class CreateTFRecord:
         createDataRecord(self.out_filename, self.category,self.addrs,self.labels)
         
 class Get_TFRecordDataset(object):
-    def __init__(self, filenames,img_height, img_width, channel,num_classes,buffer_size,seed,batch_size,GPU_buffer_size):
-        self.filenames = filenames
+    def __init__(self, record,img_height, img_width, channel,num_classes,buffer_size,seed,batch_size,GPU_buffer_size):
+        self.record = record
         self.img_height=img_height
         self.img_width=img_width
         self.channel=channel
@@ -101,5 +101,5 @@ class Get_TFRecordDataset(object):
         self.seed=seed
         self.batch_size=batch_size
         self.GPU_buffer_size = GPU_buffer_size
-        parser(record,self.img_height, self.img_width, self.channel,self.num_classes)
-        input_fn(self.filenames,self.buffer_size,self.seed,self.batch_size,self.GPU_buffer_size)
+        parser(self.record,self.img_height, self.img_width, self.channel,self.num_classes)
+        input_fn(self.record,self.buffer_size,self.seed,self.batch_size,self.GPU_buffer_size)
