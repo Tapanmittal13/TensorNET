@@ -45,7 +45,7 @@ def createDataRecord(out_filename,category,addrs,labels):
 
 #take one record out from .tfrecords file so we get an image and a label
 #augmentations will come inside this
-def parser(record,img_height, img_width, channel,num_classes):
+def parser(record):#,img_height, img_width, channel,num_classes):
     #first say what kind of feature in the file i.e. 
     keys_to_features = {
         "image_raw": tf.compat.v2.io.FixedLenFeature([], tf.string),  #changes done for 2.0
@@ -92,8 +92,8 @@ class CreateTFRecord:
         createDataRecord(self.out_filename, self.category,self.addrs,self.labels)
         
 class Get_TFRecordDataset(object):
-    def __init__(self, record,img_height, img_width, channel,num_classes,buffer_size,seed,batch_size,GPU_buffer_size):
-        self.record = record
+    def __init__(self, filenames,img_height, img_width, channel,num_classes,buffer_size,seed,batch_size,GPU_buffer_size):
+        self.filenames = filenames
         self.img_height=img_height
         self.img_width=img_width
         self.channel=channel
@@ -102,5 +102,5 @@ class Get_TFRecordDataset(object):
         self.seed=seed
         self.batch_size=batch_size
         self.GPU_buffer_size = GPU_buffer_size
-        parser(self.record,self.img_height, self.img_width, self.channel,self.num_classes)
-        input_fn(self.record,self.buffer_size,self.seed,self.batch_size,self.GPU_buffer_size)
+        #parser(self.record,self.img_height, self.img_width, self.channel,self.num_classes)
+        input_fn(self.filenames,self.img_height, self.img_width, self.channel,self.num_classes,self.buffer_size,self.seed,self.batch_size,self.GPU_buffer_size)
