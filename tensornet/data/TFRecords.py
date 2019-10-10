@@ -45,7 +45,7 @@ def createDataRecord(out_filename,category,addrs,labels):
 
 #take one record out from .tfrecords file so we get an image and a label
 #augmentations will come inside this
-def parser(record):#,img_height, img_width, channel,num_classes):
+def parser(record,img_height, img_width, channel,num_classes):
     #first say what kind of feature in the file i.e. 
     keys_to_features = {
         "image_raw": tf.compat.v2.io.FixedLenFeature([], tf.string),  #changes done for 2.0
