@@ -61,7 +61,7 @@ def parser(record):#,img_height, img_width, channel,num_classes):
 
     return image, label
 
-def input_fn(filenames,buffer_size,seed,batch_size,GPU_buffer_size):
+def input_fn(filenames,img_height, img_width, channel,num_classes,buffer_size,seed,batch_size,GPU_buffer_size):
   
   
   dataset = tf.data.TFRecordDataset(filenames=filenames, buffer_size=buffer_size)# num_parallel_reads=40) #this tf.data API,one of the most imp in Tensorflow
