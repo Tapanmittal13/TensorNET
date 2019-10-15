@@ -158,8 +158,8 @@ class ShuffleNetV2():
             out = tf.identity(out, name='cls_prediction')
             self.output = out
             
-        model = tf.keras.models.Model(inputs=input, outputs=out)
-        return model
+        #model = tf.keras.models.Model(inputs=input, outputs=out)
+        #return model
     
 
 #model=ShuffleNetV2()
