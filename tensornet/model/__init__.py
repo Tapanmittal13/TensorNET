@@ -1,1 +1,1 @@
-import * from Shufflenet_V2
+from Shufflenet_V2 import * 
