@@ -116,8 +116,8 @@ class ShuffleNetV2():
         self.shuffle_group = shuffle_group
         self.channel_sizes = self._select_channel_size(model_scale)
 
-        with slim.arg_scope([slim.batch_norm], is_training=is_training):
-            self._build_model()
+        #with slim.arg_scope([slim.batch_norm], is_training=is_training):
+        self._build_model()
 
     def _select_channel_size(self, model_scale):
         # [(out_channel, repeat_times), (out_channel, repeat_times), ...]
