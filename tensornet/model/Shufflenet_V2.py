@@ -117,6 +117,7 @@ class ShuffleNetV2():
         self.channel_sizes = self._select_channel_size(model_scale)
 
         with slim.arg_scope([slim.batch_norm], is_training=is_training):
+            print("inside with")
             self._build_model()
 
     def _select_channel_size(self, model_scale):
