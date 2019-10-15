@@ -1,3 +1,5 @@
+#https://github.com/timctho/shufflenet-v2-tensorflow
+
 import tensorflow as tf
 import tensorflow.contrib as tc
 
@@ -155,4 +157,10 @@ class ShuffleNetV2():
             out = tf.reshape(out, shape=[-1, self.cls])
             out = tf.identity(out, name='cls_prediction')
             self.output = out
+            
+        return out
+    
+
+#model=ShuffleNetV2()
+#model._build_model
 
