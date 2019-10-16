@@ -3,8 +3,8 @@
 #We can go from keras to tf but not the other way around as tf graph is lower level than keras graph
 
 import tensorflow as tf
-#from tensorflow.keras.layers import Conv2D,BatchNormalization,Activation,Dropout,AveragePooling2D,MaxPooling2D,Flatten,Dense,Input,Concatenate
-#from tensorflow.keras.models import Model
+from tensorflow.keras.layers import Conv2D,BatchNormalization,Activation,SeparableConv2D,MaxPool2D,Dropout,AveragePooling2D,MaxPooling2D,Flatten,Dense,Input,Concatenate
+from tensorflow.keras.models import Model
 
 tf.__version__
 #import tensorflow.keras as keras
@@ -21,23 +21,23 @@ def shuffle_unit(x, groups):
 
 
 def conv_bn_relu(x, out_channel, kernel_size, stride=1, dilation=1):
-    x = tf.keras.layers.Conv2D(x, out_channel, kernel_size, stride, rate=dilation,
+    x = Conv2D(x, out_channel, kernel_size, stride, rate=dilation,
                         biases_initializer=None, activation_fn=None)
-    x = tf.keras.layers.BatchNormalization(x, activation_fn=tf.nn.relu, fused=False)
+    x = BatchNormalization(x, activation_fn=tf.nn.relu, fused=False)
     return x
 
 
 def conv_bn(x, out_channel, kernel_size, stride=1, dilation=1):
-    x = tf.keras.layers.Conv2D(x, out_channel, kernel_size, stride, rate=dilation,
+    x = Conv2D(x, out_channel, kernel_size, stride, rate=dilation,
                         biases_initializer=None, activation_fn=None)
-    x = tf.keras.layers.BatchNormalization(x, activation_fn=None, fused=False)
+    x = BatchNormalization(x, activation_fn=None, fused=False)
     return x
 
 
 def depthwise_conv_bn(x, kernel_size, stride=1, dilation=1):
-    x = tf.keras.layers.SeparableConv2D(x, None, kernel_size, depth_multiplier=1, stride=stride,
+    x = SeparableConv2D(x, None, kernel_size, depth_multiplier=1, stride=stride,
                                   rate=dilation, activation_fn=None, biases_initializer=None)
-    x = tf.keras.layers.BatchNormalization(x, activation_fn=None, fused=False)
+    x = BatchNormalization(x, activation_fn=None, fused=False)
     return x
 
 
@@ -52,7 +52,7 @@ def resolve_shape(x):
 
 def global_avg_pool2D(x):
     kernel_size = resolve_shape(x)
-    x = tf.keras.layers.AveragePooling2D(x, kernel_size, stride=1)
+    x = AveragePooling2D(x, kernel_size, stride=1)
     x.set_shape([None, 1, 1, None])
     return x
 
@@ -60,11 +60,11 @@ def global_avg_pool2D(x):
 def se_unit(x, bottleneck=2):
     n, h, w, c = x.get_shape().as_list()
     kernel_size = resolve_shape(x)
-    x_pool = tf.keras.layers.AveragePooling2D(x, kernel_size, stride=1)
+    x_pool =AveragePooling2D(x, kernel_size, stride=1)
     x_pool = tf.reshape(x_pool, shape=[-1, c])
-    fc = tf.keras.layers.Dense(x_pool, bottleneck, activation_fn=tf.nn.relu,
+    fc =Dense(x_pool, bottleneck, activation_fn=tf.nn.relu,
                                   biases_initializer=None)
-    fc = tf.keras.layers.Dense(fc, c, activation_fn=tf.nn.sigmoid,
+    fc = Dense(fc, c, activation_fn=tf.nn.sigmoid,
                                   biases_initializer=None)
     if n is None:
         channel_w = tf.reshape(fc, shape=tf.convert_to_tensor([tf.shape(x)[0], 1, 1, c]))
@@ -125,7 +125,7 @@ class ShuffleNetV2():
     def _build_model(self):
 
         out = conv_bn_relu(self.input, self.first_conv_channel, 3, 2)
-        out = tf.keras.layers.MaxPool2D(out, 3, 2, padding='SAME')
+        out = MaxPool2D(out, 3, 2, padding='SAME')
 
         for idx, block in enumerate(self.channel_sizes[:-1]):
             out_channel, repeat = block
@@ -138,12 +138,12 @@ class ShuffleNetV2():
             out = conv_bn_relu(out, self.channel_sizes[-1][0], 1)
 
             out = global_avg_pool2D(out)
-            out = tf.keras.layers.Conv2D(out, self.cls, 1, activation_fn=None, biases_initializer=None)
+            out = Conv2D(out, self.cls, 1, activation_fn=None, biases_initializer=None)
             out = tf.reshape(out, shape=[-1, self.cls])
             out = tf.identity(out, name='cls_prediction')
             #self.output = out
             
-        model = tf.keras.models.Model(inputs=input, outputs=out)
+        model = Model(inputs=input, outputs=out)
         return model
     
 
