@@ -99,6 +99,7 @@ class ShuffleNetV2():
     first_conv_channel = 24
 
     def __init__(self, input_holder, cls, model_scale=1.0, shuffle_group=2, is_training=True):
+        tf.__version__
         self.input = input_holder
         self.output = None
         self.cls = cls
@@ -120,7 +121,6 @@ class ShuffleNetV2():
             raise ValueError('Unsupported model size.')
 
     def _build_model(self):
-        tf.__version__
 
         out = conv_bn_relu(self.input, self.first_conv_channel, 3, 2)
         out = tf.keras.layers.MaxPool2D(out, 3, 2, padding='SAME')
