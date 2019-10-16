@@ -3,6 +3,8 @@
 #We can go from keras to tf but not the other way around as tf graph is lower level than keras graph
 
 import tensorflow as tf
+#from tensorflow.keras.layers import Conv2D,BatchNormalization,Activation,Dropout,AveragePooling2D,MaxPooling2D,Flatten,Dense,Input,Concatenate
+#from tensorflow.keras.models import Model
 
 tf.__version__
 #import tensorflow.keras as keras
@@ -19,14 +21,14 @@ def shuffle_unit(x, groups):
 
 
 def conv_bn_relu(x, out_channel, kernel_size, stride=1, dilation=1):
-    x = tf.keras.layers.Conv2d(x, out_channel, kernel_size, stride, rate=dilation,
+    x = tf.keras.layers.Conv2D(x, out_channel, kernel_size, stride, rate=dilation,
                         biases_initializer=None, activation_fn=None)
     x = tf.keras.layers.BatchNormalization(x, activation_fn=tf.nn.relu, fused=False)
     return x
 
 
 def conv_bn(x, out_channel, kernel_size, stride=1, dilation=1):
-    x = tf.keras.layers.Conv2d(x, out_channel, kernel_size, stride, rate=dilation,
+    x = tf.keras.layers.Conv2D(x, out_channel, kernel_size, stride, rate=dilation,
                         biases_initializer=None, activation_fn=None)
     x = tf.keras.layers.BatchNormalization(x, activation_fn=None, fused=False)
     return x
@@ -136,7 +138,7 @@ class ShuffleNetV2():
             out = conv_bn_relu(out, self.channel_sizes[-1][0], 1)
 
             out = global_avg_pool2D(out)
-            out = tf.keras.layers.Conv2d(out, self.cls, 1, activation_fn=None, biases_initializer=None)
+            out = tf.keras.layers.Conv2D(out, self.cls, 1, activation_fn=None, biases_initializer=None)
             out = tf.reshape(out, shape=[-1, self.cls])
             out = tf.identity(out, name='cls_prediction')
             #self.output = out
